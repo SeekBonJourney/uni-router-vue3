@@ -1,0 +1,56 @@
+{
+  "name": "@ljhmp/uni-router-vue3",
+  "version": "0.0.3",
+  "description": "为uniapp写的路由库，实现类似vue-router的效果，仅支持vue3",
+  "type": "module",
+  "main": "./dist/mp-uni-router-vue3.umd.cjs",
+  "module": "./dist/mp-uni-router-vue3.js",
+  "exports": {
+    ".": {
+      "import": "./dist/mp-uni-router-vue3.js",
+      "require": "./dist/mp-uni-router-vue3.umd.cjs"
+    }
+  },
+  "types": "./dist/main.d.ts",
+  "files": [
+    "dist/*"
+  ],
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build && npm run build:types",
+    "preview": "vite preview",
+    "build:types": "node ./scripts/build-types.cjs"
+  },
+  "devDependencies": {
+    "@dcloudio/types": "^3.3.3",
+    "fast-glob": "^3.2.12",
+    "mini-types": "^0.1.7",
+    "miniprogram-api-typings": "^3.9.1",
+    "ts-morph": "^18.0.0",
+    "typescript": "^5.0.2",
+    "vite": "^4.3.2"
+  },
+  "excludes": [
+    "./buildTypes.js"
+  ],
+  "keywords": [
+    "uniapp、router"
+  ],
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/",
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "bugs": {
+    "url": "/issues",
+    "email": "ljhmp0@gmail.com"
+  },
+  "author": "ljhmp",
+  "license": "ISC",
+  "dependencies": {
+    "vue": "^3.3.4"
+  }
+}
