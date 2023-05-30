@@ -42,10 +42,10 @@
   },
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "https://gitee.com/ljhmp/uni-router-vue3"
   },
   "bugs": {
-    "url": "/issues",
+    "url": "https://gitee.com/ljhmp/uni-router-vue3/issues",
     "email": "ljhmp0@gmail.com"
   },
   "author": "ljhmp",
