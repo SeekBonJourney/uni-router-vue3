@@ -1,4 +1,4 @@
-import { Ref, App } from 'vue'
+import { App } from 'vue'
 import { NavTypeEnum } from '../enum'
 
 export type NavType = keyof typeof NavTypeEnum
@@ -26,8 +26,6 @@ export type LeaveAnimationType =
   | 'zoom-fade-in'
   | 'none'
 
-export type AllAnimationType = EntryAnimationType & LeaveAnimationType
-
 // 通过path路由跳转
 export type RouteLocationPathRaw = {
   path: string
@@ -42,48 +40,59 @@ export type RouteLocationNameRaw = {
 export type RouteLocationDataRaw = {
   params?: AnyObject
   query?: AnyObject
+  delay?: number
 }
 
-// 路由跳转动画配置
-export type RouteLocationAnimateRaw = {
-  animationType?: AllAnimationType
+// 路由进入动画配置
+export type RouteEntryLocationAnimateRaw = {
+  animationType?: EntryAnimationType
+  animationDuration?: number
+}
+
+// 路由离开动画配置
+export type RouteLeaveLocationAnimateRaw = {
+  animationType?: LeaveAnimationType
   animationDuration?: number
 }
 
 // 基础跳转参数类型
-export type RouteBaseLocationRaw = (
+export type BaseRouteLocationRaw = (
   | RouteLocationPathRaw
   | RouteLocationNameRaw
 ) &
   RouteLocationDataRaw
-export type RouteBaseLocation = RouteBaseLocationRaw | string
 
-export type RoutePushLocationRaw = RouteBaseLocationRaw &
-  RouteLocationAnimateRaw
-export type RoutePushLocation = RoutePushLocationRaw | string
+export type PushRouteLocationRaw = BaseRouteLocationRaw &
+  RouteEntryLocationAnimateRaw & { events?: any }
+export type BackRouteLocationRaw = RouteLocationDataRaw &
+  RouteLeaveLocationAnimateRaw & { delta?: number }
+export type OtherRouteLocationRaw = BaseRouteLocationRaw
 
-export type RouteBackLocationRaw = {
-  delta?: number
-  params?: AnyObject
-} & RouteLocationAnimateRaw
-export type RouteBackLocation = RouteBackLocationRaw | number
+export type PushRouteLocation = PushRouteLocationRaw | string
+export type BackRouteLocation = BackRouteLocationRaw | number
+export type OtherRouteLocation = OtherRouteLocationRaw | string
 
+// 所有跳转参数类型
+export type RouteLocationRaw =
+  | PushRouteLocationRaw
+  | BackRouteLocationRaw
+  | OtherRouteLocationRaw
 export type RouteLocation =
-  | RouteBaseLocation
-  | RoutePushLocation
-  | RouteBackLocation
+  | PushRouteLocation
+  | BackRouteLocation
+  | OtherRouteLocation
 
-export type NextRouteLocationRaw =
-  | ({ navType: 'back' } & RouteBackLocationRaw)
-  | ({ navType: 'push' } & RoutePushLocationRaw)
-  | ({
-      navType: keyof Omit<typeof NavTypeEnum, 'back' | 'push'>
-    } & RouteBaseLocationRaw)
+export type GoRouteLocation =
+  | (({ type: 'push' } & PushRouteLocationRaw) | string)
+  | (({ type: 'back' } & BackRouteLocationRaw) | number)
+  | (
+      | ({
+          type: keyof Omit<typeof NavTypeEnum, 'back' | 'push'>
+        } & OtherRouteLocation)
+      | string
+    )
 
-// let a: NextRouteLocationRaw = {
-//   navType: 'push',
-//   name: 'asd'
-// }
+export type NextRouteLocation = GoRouteLocation | boolean
 
 export type RouteRaw = {
   path: string
@@ -98,52 +107,48 @@ export type Route = RouteRaw & {
   from?: Route
 }
 
-type PageType = {
-  path: string
-  name?: string
-  [propName: string]: any
-}
-
-type SubPageType = {
-  root: string
-  pages?: PageType[]
-}
-
-export type PageJsonType = {
-  pages?: PageType[]
-  subPackages?: SubPageType[]
-}
-
-/**
- * Router instance.
- */
+// Router类型
 export interface Router {
-  route: Ref<Route> // 当前路由信息
-  routes: Route[] // 路由表
-  readonly guardHooks: GuardHooksConfig // 守卫钩子
-  push(to: RoutePushLocation): void
-  replace(to: RouteBaseLocation): void
-  reLaunch(to: RouteBaseLocation): void
-  pushTab(to: RouteBaseLocation): void
-  back(to?: RouteBackLocation): void
-  go(to: NextRouteLocationRaw): void
-  beforeEach(userGuard: BeforeEachGuard): void // 全局前置路由守卫
-  afterEach(userGuard: AfterEachGuard): void // 全局后置路由守卫
-  install(App: App): void
+  nameAndPathEnum: AnyObject
+  push(to: PushRouteLocation): void
+  back(to?: BackRouteLocation): void
+  replace(to: OtherRouteLocation): void
+  reLaunch(to: OtherRouteLocation): void
+  pushTab(to: OtherRouteLocation): void
+  go(to: GoRouteLocation): void
+  beforeEach(userGuard: BeforeEachGuard): void
+  afterEach(userGuard: AfterEachGuard): void
+  install(app: App): void
 }
 
+// 守卫函数
 export type BeforeEachGuard = (
   to: Route | undefined,
   from: Route,
-  next?: (rule?: NextRouteLocationRaw | boolean) => void
-) => NextRouteLocationRaw | boolean | undefined // 全局前置守卫函数
-export type AfterEachGuard = (to: Route, from: Route) => void // 全局后置守卫函数
-
+  next?: (rule?: NextRouteLocation) => void
+) => NextRouteLocation
+export type AfterEachGuard = (to: Route, from: Route) => void
 export interface GuardHooksConfig {
   beforeHooks: BeforeEachGuard[] // 前置钩子
   afterHooks: AfterEachGuard[] // 后置钩子
 }
 
+// 创建路由传递的参数
 export interface RouterOptions {
-  routes: Route[]
+  nameAndPathEnum: AnyObject
+}
+
+// page.json类型
+type PageType = {
+  path: string
+  name?: string
+  [propName: string]: any
+}
+type SubPageType = {
+  root: string
+  pages?: PageType[]
+}
+export type PageJsonType = {
+  pages?: PageType[]
+  subPackages?: SubPageType[]
 }

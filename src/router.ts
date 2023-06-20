@@ -4,79 +4,77 @@
  * @Author: ljh_mp
  * @Date: 2023-05-24 16:14:15
  * @LastEditors: ljh_mp
- * @LastEditTime: 2023-05-26 09:49:48
+ * @LastEditTime: 2023-06-20 18:22:13
  */
-import { App, shallowRef, unref } from 'vue'
-import {
-  Router,
-  RouterOptions,
-  BeforeEachGuard,
-  AfterEachGuard,
-  Route
-} from './types'
-import { useCallbacks, formatOptions, baseRouterGo, routerBack } from './utils'
-import { routeKey, routerKey } from './constant'
+import { App, shallowRef } from 'vue'
+import { Router, RouterOptions, BeforeEachGuard, AfterEachGuard } from './types'
+import { jumpPromise } from './utils'
+import { addRouterInterceptor } from './utils/interceptor'
 
 export function createRouter(options: RouterOptions) {
-  const beforeGuards = useCallbacks<BeforeEachGuard>()
-  const afterGuards = useCallbacks<AfterEachGuard>()
-  const currentRoute = shallowRef<Route>({
-    path: '/',
-    fullPath: '/',
-    params: {},
-    query: {}
-  })
-
   const router: Router = {
-    routes: options.routes,
-    route: currentRoute,
-    guardHooks: {
-      beforeHooks: beforeGuards.list,
-      afterHooks: afterGuards.list
-    },
+    nameAndPathEnum: options.nameAndPathEnum,
     push(options) {
-      return baseRouterGo(router, formatOptions(options, 'push'))
+      return jumpPromise(options, 'push')
     },
     pushTab(options) {
-      return baseRouterGo(router, formatOptions(options, 'pushTab'))
+      return jumpPromise(options, 'pushTab')
     },
     replace(options) {
-      return baseRouterGo(router, formatOptions(options, 'replace'))
+      return jumpPromise(options, 'replace')
     },
     reLaunch(options) {
-      return baseRouterGo(router, formatOptions(options, 'reLaunch'))
+      return jumpPromise(options, 'reLaunch')
     },
     back(options = 1) {
-      return baseRouterGo(router, formatOptions(options, 'back'))
+      return jumpPromise(options, 'back')
     },
     go(options) {
-      return baseRouterGo(router, options)
+      return jumpPromise(options)
     },
     beforeEach(userGuard: BeforeEachGuard) {
-      beforeGuards.add(userGuard)
+      if (typeof userGuard === 'function') {
+        uni.$mpRouter.guardHooks.beforeHooks.push(userGuard)
+      }
     },
     afterEach(userGuard: AfterEachGuard) {
-      afterGuards.add(userGuard)
+      if (typeof userGuard === 'function') {
+        uni.$mpRouter.guardHooks.afterHooks.push(userGuard)
+      }
     },
     install(app: App) {
-      console.log(app)
+      uni.$mpRouter = {
+        router,
+        history: [],
+        guardHooks: {
+          beforeHooks: [],
+          afterHooks: []
+        }
+      }
+
+      // TODO: 刷新页面时，初始化history,防止页面使用useRoute获取不到当前页面
+      app.mixin({
+        beforeCreate() {
+          const pages = getCurrentPages()
+          const page = pages[pages.length - 1]
+          console.log(page)
+        }
+      })
+
+      // 提供非setup组件使用方式
       Object.defineProperty(app.config.globalProperties, '$Router', {
         get: () => router
       })
       Object.defineProperty(app.config.globalProperties, '$Route', {
         enumerable: true,
-        get: () => unref(currentRoute)
-      })
-      app.mixin({
-        onLaunch() {
-          const globalData = getApp().globalData as AnyObject
-          globalData[routerKey] = router
-          globalData[routeKey] = currentRoute
-        },
-        onBackPress() {
-          routerBack({}, router)
+        get: () => {
+          const history = uni.$mpRouter.history
+          return history[history.length - 1]
         }
       })
+
+      // 添加路由拦截器
+      addRouterInterceptor()
     }
   }
   return router

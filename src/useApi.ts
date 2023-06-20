@@ -1,18 +1,16 @@
 import { Router, Route } from './types'
-import { reactive, Ref } from 'vue'
-import { routerKey, routeKey } from './constant'
 
+/**
+ * 获取路由管理器
+ */
 export function useRouter(): Router {
-  const globalData = getApp().globalData as AnyObject
-  const router = globalData[routerKey] as Router
-  return router
+  return uni.$mpRouter.router
 }
 
 /**
- *
+ * 获取当前路由
  */
 export function useRoute(): Route {
-  const globalData = getApp().globalData as AnyObject
-  const currentRoute = globalData[routeKey] as Ref<Route>
-  return reactive(currentRoute.value)
+  const history = uni.$mpRouter.history
+  return history[history.length - 1]
 }
