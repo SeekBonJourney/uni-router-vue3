@@ -3,8 +3,7 @@ import {
   NavType,
   PageJsonType,
   RouteLocationRaw,
-  BackRouteLocationRaw,
-  Route
+  BackRouteLocationRaw
 } from '../types'
 import { NavTypeEnum } from '../enum'
 
@@ -14,8 +13,9 @@ import { NavTypeEnum } from '../enum'
  * @param {Route} options 跳转配置
  * @returns {Promise}
  */
-export function jumpPromise(options: RouteLocation, type: NavType = 'push') {
+export function jumpPromise(options: RouteLocation, type?: NavType) {
   return new Promise((resolve, reject) => {
+    type = (type ? type : (options as any)?.type || 'push') as NavType
     const opt: any = formatOptions(options, type)
     if (opt.path) {
       opt.url = opt.path

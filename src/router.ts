@@ -6,7 +6,7 @@
  * @LastEditors: ljh_mp
  * @LastEditTime: 2023-06-20 18:22:13
  */
-import { App, shallowRef } from 'vue'
+import { App } from 'vue'
 import { Router, RouterOptions, BeforeEachGuard, AfterEachGuard } from './types'
 import { jumpPromise } from './utils'
 import { addRouterInterceptor } from './utils/interceptor'
