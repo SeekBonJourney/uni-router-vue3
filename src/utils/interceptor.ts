@@ -4,11 +4,16 @@
  * @Author: ljh_mp
  * @Date: 2023-06-16 16:40:31
  * @LastEditors: ljh_mp
- * @LastEditTime: 2023-06-20 18:21:17
+ * @LastEditTime: 2023-06-21 09:17:48
  */
-import { delay, mergeQueryAndUrlParams } from '.'
+import { delay, mergeQueryAndUrlQuery, getHistory } from '.'
 import { NavTypeEnum } from '../enum'
-import { AfterEachGuard, BeforeEachGuard, NextRouteLocation } from '../types'
+import {
+  AfterEachGuard,
+  BeforeEachGuard,
+  NextRouteLocation,
+  Route
+} from '../types'
 
 /**
  * next或者守卫的返回值 规则验证
@@ -36,13 +41,20 @@ function ruleVerify(rule: any) {
 function getCurrentRouteInfo(type: NavTypeEnum, e: any) {
   const router = uni.$mpRouter.router
   const history = uni.$mpRouter.history
-  const guardHooks = uni.$mpRouter.guardHooks
-  const from = history[history.length - 1]
-  const to =
+  const guardHooks = uni.$mpRouter.router.guardHooks
+  const from = getHistory(history, history.length - 1)
+  const to: Route =
     type === NavTypeEnum.back
-      ? history[history.length > e.delay ? history.length - e.delay - 1 : 0]
-      : e
-  to.from = from?.url
+      ? getHistory(
+          history,
+          history.length > e.delay ? history.length - e.delay - 1 : 0
+        )
+      : {
+          ...e,
+          type,
+          path: e.url
+        }
+  to.from = from?.path
   return { router, history, guardHooks, to, from }
 }
 
@@ -53,7 +65,7 @@ export function addRouterInterceptor() {
   const types = Object.values(NavTypeEnum)
   types.forEach((type) => {
     uni.addInterceptor(type, {
-      async invoke(e) {
+      async invoke(e: any) {
         let isPass = true
 
         const { router, guardHooks, to, from } = getCurrentRouteInfo(type, e)
@@ -62,8 +74,10 @@ export function addRouterInterceptor() {
           const result = ruleVerify(rule)
           // 路由通过，继续跳转
           if (result === true) {
-            // TODO: 转换为自定义参数
-            router.go(e)
+            router.go({
+              ...e,
+              type
+            })
           }
           // 重定向跳转
           else if (result) {
@@ -113,7 +127,7 @@ export function addRouterInterceptor() {
         }
 
         // 将url参数与query参数合并
-        mergeQueryAndUrlParams(e)
+        mergeQueryAndUrlQuery(e)
 
         return e
       },

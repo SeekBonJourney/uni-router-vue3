@@ -1,4 +1,5 @@
 import { Router, Route } from './types'
+import { getHistory } from './utils'
 
 /**
  * 获取路由管理器
@@ -12,5 +13,5 @@ export function useRouter(): Router {
  */
 export function useRoute(): Route {
   const history = uni.$mpRouter.history
-  return history[history.length - 1]
+  return getHistory(history, history.length - 1)
 }

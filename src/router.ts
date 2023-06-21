@@ -8,12 +8,17 @@
  */
 import { App } from 'vue'
 import { Router, RouterOptions, BeforeEachGuard, AfterEachGuard } from './types'
-import { jumpPromise } from './utils'
+import { jumpPromise, transformPageJsonToEnum } from './utils'
 import { addRouterInterceptor } from './utils/interceptor'
 
 export function createRouter(options: RouterOptions) {
   const router: Router = {
-    nameAndPathEnum: options.nameAndPathEnum,
+    pageJson: options.pageJson,
+    nameAndPathEnum: transformPageJsonToEnum(options.pageJson),
+    guardHooks: {
+      beforeHooks: [],
+      afterHooks: []
+    },
     push(options) {
       return jumpPromise(options, 'push')
     },
@@ -34,32 +39,19 @@ export function createRouter(options: RouterOptions) {
     },
     beforeEach(userGuard: BeforeEachGuard) {
       if (typeof userGuard === 'function') {
-        uni.$mpRouter.guardHooks.beforeHooks.push(userGuard)
+        router.guardHooks.beforeHooks.push(userGuard)
       }
     },
     afterEach(userGuard: AfterEachGuard) {
       if (typeof userGuard === 'function') {
-        uni.$mpRouter.guardHooks.afterHooks.push(userGuard)
+        router.guardHooks.afterHooks.push(userGuard)
       }
     },
     install(app: App) {
       uni.$mpRouter = {
         router,
-        history: [],
-        guardHooks: {
-          beforeHooks: [],
-          afterHooks: []
-        }
+        history: [{ path: '/' }]
       }
-
-      // TODO: 刷新页面时，初始化history,防止页面使用useRoute获取不到当前页面
-      app.mixin({
-        beforeCreate() {
-          const pages = getCurrentPages()
-          const page = pages[pages.length - 1]
-          console.log(page)
-        }
-      })
 
       // 提供非setup组件使用方式
       Object.defineProperty(app.config.globalProperties, '$Router', {

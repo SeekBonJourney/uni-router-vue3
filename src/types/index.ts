@@ -100,16 +100,17 @@ export type RouteRaw = {
 }
 
 export type Route = RouteRaw & {
-  fullPath: string
   query?: AnyObject
   params?: AnyObject
   type?: NavType
-  from?: Route
+  from?: string
 }
 
 // Router类型
 export interface Router {
-  nameAndPathEnum: AnyObject
+  pageJson: PageJsonType
+  readonly nameAndPathEnum: AnyObject
+  readonly guardHooks: GuardHooksConfig
   push(to: PushRouteLocation): void
   back(to?: BackRouteLocation): void
   replace(to: OtherRouteLocation): void
@@ -135,7 +136,7 @@ export interface GuardHooksConfig {
 
 // 创建路由传递的参数
 export interface RouterOptions {
-  nameAndPathEnum: AnyObject
+  pageJson: PageJsonType
 }
 
 // page.json类型

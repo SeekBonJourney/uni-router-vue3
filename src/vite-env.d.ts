@@ -5,8 +5,7 @@ declare global {
   interface Uni {
     $mpRouter: {
       router: Router
-      history: any[]
-      guardHooks: GuardHooksConfig
+      history: Route[]
     }
   }
 }

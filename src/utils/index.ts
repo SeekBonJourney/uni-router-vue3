@@ -1,9 +1,12 @@
+import { RouteLocationPathRaw } from './../../dist/types/index.d'
+import { RouteLocationNameRaw } from './../types/index'
 import {
   RouteLocation,
   NavType,
   PageJsonType,
   RouteLocationRaw,
-  BackRouteLocationRaw
+  BackRouteLocationRaw,
+  Route
 } from '../types'
 import { NavTypeEnum } from '../enum'
 
@@ -88,7 +91,7 @@ export function queryStringify(
  * @param url url
  * @returns 参数
  */
-export function getUrlParams(url: string): AnyObject {
+export function getUrlQuery(url: string): AnyObject {
   const regexp = /[\?|\&]([^\=|\#|\?|\&]+)=([^\=|\#|\?|\&]*)/g
   return Array.from(url.matchAll(regexp), (m) => ({
     [m[1]]: m[2]
@@ -101,9 +104,38 @@ export function getUrlParams(url: string): AnyObject {
   )
 }
 
-export function mergeQueryAndUrlParams(e: { url: string; query?: AnyObject }) {
+/**
+ * 合并传递的query和url上的query
+ * @param e
+ */
+export function mergeQueryAndUrlQuery(e: { url: string; query?: AnyObject }) {
   e.url = queryStringify(e.url, e.query)
-  e.query = getUrlParams(e.url)
+  e.query = getUrlQuery(e.url)
+}
+
+/**
+ * 获取指定历史记录，主要解决非首页进入，第一条历史不正确的问题
+ * @param history 所有历史记录
+ * @param index 要取的下标
+ */
+export function getHistory(history: Route[], index: number): Route {
+  if (
+    index === 0 &&
+    history[0].path === '/' &&
+    Object.keys(history[0]).length === 1
+  ) {
+    const pages = getCurrentPages()
+    const firstPage = pages[0]
+    const path = firstPage.route || '/'
+    history[0] = {
+      path: path,
+      params: {},
+      query: getUrlQuery(path),
+      from: '',
+      type: undefined
+    }
+  }
+  return history[index]
 }
 
 /**
@@ -132,6 +164,12 @@ export function formatOptions(
       } else {
         const path = uni.$mpRouter.router.nameAndPathEnum[options]
         options = { path }
+      }
+    } else if (typeof options === 'object') {
+      const name = (options as RouteLocationNameRaw).name
+      if (name) {
+        ;(options as RouteLocationPathRaw).path =
+          uni.$mpRouter.router.nameAndPathEnum[name]
       }
     }
     return options as RouteLocationRaw
