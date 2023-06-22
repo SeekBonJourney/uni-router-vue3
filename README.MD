@@ -112,17 +112,20 @@ router.back() // 默认为1
 
 // 使用配置参数
 router.back({ 
+  delta: 1,    // 跳转层级
   delay: 500,  // 延时跳转
   query: {},  // 修改目标页面的query(不会修改网址，刷新后还会使用原网址上的参数)
   params: {},  // 传递的参数，可传递复杂数据，函数等（适合传递复杂数据，刷新页面后无法获取）
   ignoreGuard: false,  // 是否忽略前置守卫
+  // 其他一些原生navigateBack方法的参数
+  animationType: '',
+  animationDuration: 300,
 })
 ```
 
 ### router.go
 
 ```js
-// 以上三个方法接收参数相同，与push相比缺少了动画及events配置
 import { useRouter, useRoute } from "@ljhmp/uni-router-vue3";
 
 const router = useRouter()
