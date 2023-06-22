@@ -4,10 +4,16 @@
  * @Author: ljh_mp
  * @Date: 2023-06-16 16:40:31
  * @LastEditors: ljh_mp
- * @LastEditTime: 2023-06-21 09:17:48
+ * @LastEditTime: 2023-06-22 19:31:43
  */
-import { delay, mergeQueryAndUrlQuery, getHistory } from '.'
 import { NavTypeEnum } from '../enum'
+import {
+  delay,
+  mergeQueryAndUrlQuery,
+  getHistory,
+  pathHasExist,
+  getFullPath
+} from '.'
 import {
   AfterEachGuard,
   BeforeEachGuard,
@@ -16,9 +22,9 @@ import {
 } from '../types'
 
 /**
- * next或者守卫的返回值 规则验证
+ * next参数或者守卫的返回值 规则验证
  * @param {any} rule 返回值
- * @returns { Boolean | String | String } 通过|未通过|重定向
+ * @returns { Boolean | String | Object } 通过、未通过|重定向
  */
 function ruleVerify(rule: any) {
   if (rule === null || rule === false) {
@@ -43,18 +49,24 @@ function getCurrentRouteInfo(type: NavTypeEnum, e: any) {
   const history = uni.$mpRouter.history
   const guardHooks = uni.$mpRouter.router.guardHooks
   const from = getHistory(history, history.length - 1)
-  const to: Route =
-    type === NavTypeEnum.back
-      ? getHistory(
-          history,
-          history.length > e.delay ? history.length - e.delay - 1 : 0
-        )
-      : {
-          ...e,
-          type,
-          path: e.url
-        }
-  to.from = from?.path
+  let to: Route
+  const { from: _, success, fail, ...otherOptions } = e
+  if (type === NavTypeEnum.back) {
+    const currentHistory = getHistory(
+      history,
+      history.length > e.delay ? history.length - e.delay - 1 : 0
+    )
+    to = Object.assign(currentHistory, otherOptions)
+  } else {
+    to = {
+      ...otherOptions,
+      path: e.url
+    }
+  }
+  if (!to.query) to.query = {}
+  if (!to.params) to.params = {}
+  to.method = type
+  to.from = from?.url
   return { router, history, guardHooks, to, from }
 }
 
@@ -63,20 +75,45 @@ function getCurrentRouteInfo(type: NavTypeEnum, e: any) {
  */
 export function addRouterInterceptor() {
   const types = Object.values(NavTypeEnum)
-  types.forEach((type) => {
+  const keys = Object.keys(NavTypeEnum)
+  types.forEach((type, index) => {
     uni.addInterceptor(type, {
       async invoke(e: any) {
+        console.log(e)
         let isPass = true
+        let isNext = false
 
-        const { router, guardHooks, to, from } = getCurrentRouteInfo(type, e)
+        e.type = keys[index]
+        const { router, history, guardHooks, to, from } = getCurrentRouteInfo(
+          type,
+          e
+        )
+
+        // 检查要调整的网址是否存在
+        if (type !== NavTypeEnum.back) {
+          const fullPath =
+            to.url.indexOf('/') === 0 && to.url !== '/'
+              ? to.url
+              : getFullPath(from.url, to.url)
+          const hasExist = pathHasExist(fullPath)
+          if (!hasExist) {
+            return
+          }
+          to.url = fullPath
+        }
 
         const next = (rule?: NextRouteLocation) => {
+          if (isNext) {
+            return
+          }
+          isNext = true
           const result = ruleVerify(rule)
           // 路由通过，继续跳转
           if (result === true) {
             router.go({
-              ...e,
-              type
+              ...to,
+              type: e.type,
+              ignoreGuard: true
             })
           }
           // 重定向跳转
@@ -89,7 +126,7 @@ export function addRouterInterceptor() {
         const hooks = guardHooks.beforeHooks as BeforeEachGuard[]
 
         // 未配置前置守卫，直接通过
-        if (hooks.length) {
+        if (hooks.length && !to.ignoreGuard) {
           // 循环执行前置守卫
           for (let i = 0; i < hooks.length; i++) {
             // 获取当前守卫
@@ -104,7 +141,7 @@ export function addRouterInterceptor() {
               break
             } else {
               // 没有使用next,则使用返回值作为守卫结果进行跳转
-              const rule = await hook(to, from)
+              const rule = await hook(to, from, () => {})
               const result = ruleVerify(rule)
               if (result === false || result !== true) {
                 isPass = false
@@ -117,8 +154,8 @@ export function addRouterInterceptor() {
           }
         }
 
-        if (!isPass) {
-          return false
+        if (!isPass && !to.ignoreGuard) {
+          return { data: {} }
         }
 
         // 延迟跳转
@@ -127,28 +164,18 @@ export function addRouterInterceptor() {
         }
 
         // 将url参数与query参数合并
-        mergeQueryAndUrlQuery(e)
-
-        return e
-      },
-
-      success() {
-        const e = arguments[1]
-        const { history, guardHooks, to, from } = getCurrentRouteInfo(type, e)
-
-        // 调用后置守卫
-        const hooks = guardHooks.afterHooks as AfterEachGuard[]
-        if (hooks.length) {
-          for (let i = 0; i < hooks.length; i++) {
-            const hook = hooks[i]
-            hook(to, from)
-          }
+        if (type !== NavTypeEnum.back) {
+          mergeQueryAndUrlQuery(to)
+          e.url = to.url
         }
 
+        // TODO: 由于APP端success回调会在新页面加载之后执行，所以将添加历史记录及调用后置守卫放到了此处，以保证新页面使用setup语法获取到的路由为最新的，后期如果uniapp修复，可以放到success里执行（H5端可以放到success下，没有问题）
         // 跳转成功，添加历史记录
         if (type === NavTypeEnum.back) {
-          const delay = e.delay || 1
-          history.splice(history.length - delay, delay)
+          const delta = e.delta || 1
+          const start = history.length - delta
+          history.splice(start > 0 ? start : 1, delta)
+          console.log(history.length)
         } else {
           if (type === NavTypeEnum.push) {
             history.push(to)
@@ -161,6 +188,17 @@ export function addRouterInterceptor() {
             history.splice(0, history.length, to)
           }
         }
+
+        // 调用后置守卫
+        const afterHooks = guardHooks.afterHooks as AfterEachGuard[]
+        if (afterHooks.length) {
+          for (let i = 0; i < afterHooks.length; i++) {
+            const hook = afterHooks[i]
+            hook(to, from)
+          }
+        }
+
+        return e
       }
     })
   })

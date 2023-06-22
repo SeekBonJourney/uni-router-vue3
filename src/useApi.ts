@@ -1,3 +1,11 @@
+/*
+ * @Description:
+ * @Version: 2.0
+ * @Author: ljh_mp
+ * @Date: 2023-06-22 08:14:05
+ * @LastEditors: ljh_mp
+ * @LastEditTime: 2023-06-22 19:12:45
+ */
 import { Router, Route } from './types'
 import { getHistory } from './utils'
 
@@ -13,5 +21,6 @@ export function useRouter(): Router {
  */
 export function useRoute(): Route {
   const history = uni.$mpRouter.history
-  return getHistory(history, history.length - 1)
+  const route = getHistory(history, history.length - 1)
+  return route
 }

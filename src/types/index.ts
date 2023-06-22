@@ -41,6 +41,7 @@ export type RouteLocationDataRaw = {
   params?: AnyObject
   query?: AnyObject
   delay?: number
+  ignoreGuard?: boolean
 }
 
 // 路由进入动画配置
@@ -83,33 +84,38 @@ export type RouteLocation =
   | OtherRouteLocation
 
 export type GoRouteLocation =
-  | (({ type: 'push' } & PushRouteLocationRaw) | string)
-  | (({ type: 'back' } & BackRouteLocationRaw) | number)
-  | (
-      | ({
-          type: keyof Omit<typeof NavTypeEnum, 'back' | 'push'>
-        } & OtherRouteLocation)
-      | string
-    )
+  | ({ type: 'push' } & PushRouteLocationRaw)
+  | ({ type: 'back' } & BackRouteLocationRaw)
+  | ({
+      type: keyof Omit<typeof NavTypeEnum, 'back' | 'push'>
+    } & OtherRouteLocation)
+  | PushRouteLocationRaw
+  | string
 
 export type NextRouteLocation = GoRouteLocation | boolean
 
 export type RouteRaw = {
   path: string
+  url: string
   name?: string
 }
 
 export type Route = RouteRaw & {
-  query?: AnyObject
-  params?: AnyObject
-  type?: NavType
+  query: AnyObject
+  params: AnyObject
+  type: NavType
+  ignoreGuard?: boolean
+  delay?: number
+  method: NavMethodType
   from?: string
+  [propName: string]: any
 }
 
 // Router类型
 export interface Router {
   pageJson: PageJsonType
   readonly nameAndPathEnum: AnyObject
+  readonly allFullPath: string[]
   readonly guardHooks: GuardHooksConfig
   push(to: PushRouteLocation): void
   back(to?: BackRouteLocation): void
@@ -124,10 +130,10 @@ export interface Router {
 
 // 守卫函数
 export type BeforeEachGuard = (
-  to: Route | undefined,
+  to: Route,
   from: Route,
-  next?: (rule?: NextRouteLocation) => void
-) => NextRouteLocation
+  next: (rule?: NextRouteLocation) => void
+) => NextRouteLocation | void | Promise<NextRouteLocation | void>
 export type AfterEachGuard = (to: Route, from: Route) => void
 export interface GuardHooksConfig {
   beforeHooks: BeforeEachGuard[] // 前置钩子

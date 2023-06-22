@@ -4,17 +4,19 @@
  * @Author: ljh_mp
  * @Date: 2023-05-24 16:14:15
  * @LastEditors: ljh_mp
- * @LastEditTime: 2023-06-20 18:22:13
+ * @LastEditTime: 2023-06-22 19:44:43
  */
-import { App } from 'vue'
+import { App, reactive } from 'vue'
 import { Router, RouterOptions, BeforeEachGuard, AfterEachGuard } from './types'
-import { jumpPromise, transformPageJsonToEnum } from './utils'
+import { jumpPromise, transformPageJson } from './utils'
 import { addRouterInterceptor } from './utils/interceptor'
 
 export function createRouter(options: RouterOptions) {
+  const { nameAndPathEnum, allFullPath } = transformPageJson(options.pageJson)
   const router: Router = {
     pageJson: options.pageJson,
-    nameAndPathEnum: transformPageJsonToEnum(options.pageJson),
+    nameAndPathEnum,
+    allFullPath,
     guardHooks: {
       beforeHooks: [],
       afterHooks: []
@@ -50,7 +52,7 @@ export function createRouter(options: RouterOptions) {
     install(app: App) {
       uni.$mpRouter = {
         router,
-        history: [{ path: '/' }]
+        history: reactive([])
       }
 
       // 提供非setup组件使用方式

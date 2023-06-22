@@ -1,5 +1,4 @@
-import { RouteLocationPathRaw } from './../../dist/types/index.d'
-import { RouteLocationNameRaw } from './../types/index'
+import { RouteLocationNameRaw, RouteLocationPathRaw } from './../types/index'
 import {
   RouteLocation,
   NavType,
@@ -78,10 +77,12 @@ export function queryStringify(
       queryStr = arr.join('&')
     }
   }
-  if (!url.includes('?')) {
-    queryStr = '?' + queryStr
-  } else {
-    queryStr = '&' + queryStr
+  if (queryStr) {
+    if (!url.includes('?')) {
+      queryStr = '?' + queryStr
+    } else {
+      queryStr = '&' + queryStr
+    }
   }
   return url + queryStr
 }
@@ -91,7 +92,7 @@ export function queryStringify(
  * @param url url
  * @returns 参数
  */
-export function getUrlQuery(url: string): AnyObject {
+export function getUrlQuery(url: string = ''): AnyObject {
   const regexp = /[\?|\&]([^\=|\#|\?|\&]+)=([^\=|\#|\?|\&]*)/g
   return Array.from(url.matchAll(regexp), (m) => ({
     [m[1]]: m[2]
@@ -108,9 +109,12 @@ export function getUrlQuery(url: string): AnyObject {
  * 合并传递的query和url上的query
  * @param e
  */
-export function mergeQueryAndUrlQuery(e: { url: string; query?: AnyObject }) {
-  e.url = queryStringify(e.url, e.query)
-  e.query = getUrlQuery(e.url)
+export function mergeQueryAndUrlQuery(e: Route) {
+  const path = e.url.split('?')[0]
+  const urlQuery = getUrlQuery(e.url)
+  e.query = { ...urlQuery, ...e.query }
+  console.log(path, e.query)
+  e.url = queryStringify(path, e.query)
 }
 
 /**
@@ -119,20 +123,19 @@ export function mergeQueryAndUrlQuery(e: { url: string; query?: AnyObject }) {
  * @param index 要取的下标
  */
 export function getHistory(history: Route[], index: number): Route {
-  if (
-    index === 0 &&
-    history[0].path === '/' &&
-    Object.keys(history[0]).length === 1
-  ) {
+  index = index < 0 ? 0 : index
+  if (index === 0 && history.length === 0) {
     const pages = getCurrentPages()
-    const firstPage = pages[0]
-    const path = firstPage.route || '/'
+    const firstPage: any = pages[0]
+    const path = firstPage.$page.fullPath || '/'
     history[0] = {
+      url: path,
       path: path,
       params: {},
       query: getUrlQuery(path),
       from: '',
-      type: undefined
+      type: 'reLaunch',
+      method: 'reLaunch'
     }
   }
   return history[index]
@@ -177,16 +180,22 @@ export function formatOptions(
 }
 
 /**
- * 将page.json配置转换为name与path的枚举配置
+ * 转换page.json配置
  * @param {PageJsonType} pageJson page配置，一般为page.json
  * @returns {AnyObject}
  */
-export function transformPageJsonToEnum(pageJson: PageJsonType): AnyObject {
+export function transformPageJson(pageJson: PageJsonType): {
+  nameAndPathEnum: AnyObject
+  allFullPath: string[]
+} {
   const nameAndPathEnum: AnyObject = {}
+  const allFullPath: string[] = []
   if (pageJson.pages) {
     pageJson.pages.forEach((page) => {
+      const fullPath = `/${page.path}`
+      allFullPath.push(fullPath)
       if (page.name) {
-        nameAndPathEnum[page.name] = `/${page.path}`
+        nameAndPathEnum[page.name] = fullPath
       }
     })
   }
@@ -195,12 +204,51 @@ export function transformPageJsonToEnum(pageJson: PageJsonType): AnyObject {
       const root = subPage.root
       if (subPage.pages) {
         subPage.pages.forEach((page) => {
+          const fullPath = `/${root}/${page.path}`
+          allFullPath.push(fullPath)
           if (page.name) {
-            nameAndPathEnum[page.name] = `/${root}/${page.path}`
+            nameAndPathEnum[page.name] = fullPath
           }
         })
       }
     })
   }
-  return nameAndPathEnum
+  return { nameAndPathEnum, allFullPath }
+}
+
+/**
+ * 获取要跳转的完整路径
+ * @param fromPath 当前页面（全路径）
+ * @param toPath 要跳转的页面
+ * @returns {String} 完整的要跳转的路径
+ */
+export function getFullPath(fromPath: string, toPath: string) {
+  if (toPath === '/') {
+    return uni.$mpRouter.router.allFullPath[0]
+  }
+  const from = fromPath.split('/')
+  const to = toPath.split('/')
+  let end = 1
+  for (let i = 0; i < to.length; i++) {
+    const item = to[i]
+    if (!item.includes('.')) break
+    else {
+      to.splice(i--, 1)
+      if (item === '.') continue
+      if (item === '..') end++
+    }
+  }
+  return from
+    .slice(0, -1 * end)
+    .concat(to)
+    .join('/')
+}
+
+/**
+ * 判断跳转的网址是否存在
+ * @param {String} path 地址
+ * @returns {Boolean}
+ */
+export function pathHasExist(path: string) {
+  return uni.$mpRouter.router.allFullPath.includes(path.split('?')[0])
 }
