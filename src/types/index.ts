@@ -121,7 +121,7 @@ export interface Router {
   back(to?: BackRouteLocation): void
   replace(to: OtherRouteLocation): void
   reLaunch(to: OtherRouteLocation): void
-  pushTab(to: OtherRouteLocation): void
+  tab(to: OtherRouteLocation): void
   go(to: GoRouteLocation): void
   beforeEach(userGuard: BeforeEachGuard): void
   afterEach(userGuard: AfterEachGuard): void

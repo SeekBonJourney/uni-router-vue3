@@ -182,7 +182,7 @@ export function addRouterInterceptor() {
           } else if (type === NavTypeEnum.replace) {
             history.splice(history.length - 2, 1, to)
           } else if (
-            type === NavTypeEnum.pushTab ||
+            type === NavTypeEnum.tab ||
             type === NavTypeEnum.reLaunch
           ) {
             history.splice(0, history.length, to)

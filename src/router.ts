@@ -24,8 +24,8 @@ export function createRouter(options: RouterOptions) {
     push(options) {
       return jumpPromise(options, 'push')
     },
-    pushTab(options) {
-      return jumpPromise(options, 'pushTab')
+    tab(options) {
+      return jumpPromise(options, 'tab')
     },
     replace(options) {
       return jumpPromise(options, 'replace')

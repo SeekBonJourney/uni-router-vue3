@@ -3,6 +3,6 @@ export enum NavTypeEnum {
   push = 'navigateTo',
   replace = 'redirectTo',
   reLaunch = 'reLaunch',
-  pushTab = 'switchTab',
+  tab = 'switchTab',
   back = 'navigateBack'
 }

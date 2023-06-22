@@ -67,7 +67,7 @@ router.push({
 })
 ```
 
-### router.pushTab、router.replace、router.reLaunch
+### router.tab、router.replace、router.reLaunch
 
 ```js
 // 以上三个方法接收参数相同，与push相比缺少了动画及events配置
@@ -77,7 +77,7 @@ const router = useRouter()
 const route = useRoute()
 
 // 使用path进行跳转
-router.pushTab('/pages/home/home')
+router.tab('/pages/home/home')
 
 // 使用name进行跳转（需要再page.json的页面配置下配置name属性）
 router.replace('home')
@@ -142,7 +142,7 @@ router.go('home')
 // 使用配置参数
 router.go({ 
   // 跳转方式
-  type: 'push' | 'pushTab' | 'replace' | 'reLaunch' | 'back',
+  type: 'push' | 'tab' | 'replace' | 'reLaunch' | 'back',
   
   // 其他参数根据type决定
 })
