@@ -1,6 +1,6 @@
 {
   "name": "@ljhmp/uni-router-vue3",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "为uniapp写的路由库，实现类似vue-router的效果，仅支持vue3",
   "type": "module",
   "main": "./dist/mp-uni-router-vue3.umd.cjs",
@@ -28,7 +28,8 @@
     "miniprogram-api-typings": "^3.9.1",
     "ts-morph": "^18.0.0",
     "typescript": "^5.0.2",
-    "vite": "^4.3.2"
+    "vite": "^4.3.2",
+    "vue": "^3.2.47"
   },
   "excludes": [
     "./buildTypes.js"
@@ -49,8 +50,5 @@
     "email": "ljhmp0@gmail.com"
   },
   "author": "ljhmp",
-  "license": "ISC",
-  "dependencies": {
-    "vue": "^3.3.4"
-  }
+  "license": "ISC"
 }
