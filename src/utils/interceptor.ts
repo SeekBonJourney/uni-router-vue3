@@ -79,7 +79,6 @@ export function addRouterInterceptor() {
   types.forEach((type, index) => {
     uni.addInterceptor(type, {
       async invoke(e: any) {
-        console.log(e)
         let isPass = true
         let isNext = false
 
@@ -175,7 +174,6 @@ export function addRouterInterceptor() {
           const delta = e.delta || 1
           const start = history.length - delta
           history.splice(start > 0 ? start : 1, delta)
-          console.log(history.length)
         } else {
           if (type === NavTypeEnum.push) {
             history.push(to)
