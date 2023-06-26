@@ -88,7 +88,7 @@ export function addRouterInterceptor() {
           e
         )
 
-        // 检查要调整的网址是否存在
+        // 检查要跳转的网址是否存在
         if (type !== NavTypeEnum.back) {
           const fullPath =
             to.url.indexOf('/') === 0 && to.url !== '/'

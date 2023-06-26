@@ -125,8 +125,8 @@ export function getHistory(history: Route[], index: number): Route {
   index = index < 0 ? 0 : index
   if (index === 0 && history.length === 0) {
     const pages = getCurrentPages()
-    const firstPage: any = pages[0]
-    const path = firstPage.$page.fullPath || '/'
+    const firstPage = pages[0]
+    const path = '/' + (firstPage.route || '')
     history[0] = {
       url: path,
       path: path,
