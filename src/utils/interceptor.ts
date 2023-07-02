@@ -47,6 +47,7 @@ function ruleVerify(rule: any) {
 function getCurrentRouteInfo(type: NavTypeEnum, e: any) {
   const router = uni.$mpRouter.router
   const history = uni.$mpRouter.history
+  const tabHistory = uni.$mpRouter.tabHistory
   const guardHooks = uni.$mpRouter.router.guardHooks
   const from = getHistory(history, history.length - 1)
   let to: Route
@@ -67,7 +68,7 @@ function getCurrentRouteInfo(type: NavTypeEnum, e: any) {
   if (!to.params) to.params = {}
   to.method = type
   to.from = from?.url
-  return { router, history, guardHooks, to, from }
+  return { router, history, tabHistory, guardHooks, to, from }
 }
 
 /**
@@ -83,10 +84,8 @@ export function addRouterInterceptor() {
         let isNext = false
 
         e.type = keys[index]
-        const { router, history, guardHooks, to, from } = getCurrentRouteInfo(
-          type,
-          e
-        )
+        const { router, history, tabHistory, guardHooks, to, from } =
+          getCurrentRouteInfo(type, e)
 
         // 检查要跳转的网址是否存在
         if (type !== NavTypeEnum.back) {
@@ -179,10 +178,16 @@ export function addRouterInterceptor() {
             history.push(to)
           } else if (type === NavTypeEnum.replace) {
             history.splice(history.length - 2, 1, to)
-          } else if (
-            type === NavTypeEnum.tab ||
-            type === NavTypeEnum.reLaunch
-          ) {
+          } else if (type === NavTypeEnum.tab) {
+            // 由于tabbar页面在历史清除时并不会清除页面，所以此处做缓存处理以实现数据复用及响应式
+            const key = to.url.split('?')[0]
+            if (tabHistory[key]) {
+              Object.assign(tabHistory[key], to)
+            } else {
+              tabHistory[key] = to
+            }
+            history.splice(0, history.length, tabHistory[key])
+          } else if (type === NavTypeEnum.reLaunch) {
             history.splice(0, history.length, to)
           }
         }

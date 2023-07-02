@@ -52,7 +52,8 @@ export function createRouter(options: RouterOptions) {
     install(app: App) {
       uni.$mpRouter = {
         router,
-        history: reactive([])
+        history: reactive([]),
+        tabHistory: {}
       }
 
       // 提供非setup组件使用方式

@@ -136,6 +136,14 @@ export function getHistory(history: Route[], index: number): Route {
       type: 'reLaunch',
       method: 'reLaunch'
     }
+    // 如果首页是tabbar页面，则保存在tabbar历史里
+    const tabbar = uni.$mpRouter.router.pageJson.tabBar?.list
+    if (tabbar && tabbar.length) {
+      const tab = tabbar.find((tab) => tab.pagePath === firstPage.route)
+      if (tab) {
+        uni.$mpRouter.tabHistory[path] = history[0]
+      }
+    }
   }
   return history[index]
 }

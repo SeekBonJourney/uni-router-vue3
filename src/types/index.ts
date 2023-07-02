@@ -158,4 +158,7 @@ type SubPageType = {
 export type PageJsonType = {
   pages?: PageType[]
   subPackages?: SubPageType[]
+  tabBar?: {
+    list?: { pagePath?: string }[]
+  }
 }

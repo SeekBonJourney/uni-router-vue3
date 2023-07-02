@@ -1,6 +1,6 @@
 {
   "name": "@ljhmp/uni-router-vue3",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "为uniapp写的路由库，实现类似vue-router的效果，仅支持vue3",
   "type": "module",
   "main": "./dist/mp-uni-router-vue3.umd.cjs",

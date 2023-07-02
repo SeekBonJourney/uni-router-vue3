@@ -6,6 +6,9 @@ declare global {
     $mpRouter: {
       router: Router
       history: Route[]
+      tabHistory: {
+        [key: string]: Route
+      }
     }
   }
 }
