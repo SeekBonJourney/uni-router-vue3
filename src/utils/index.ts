@@ -8,6 +8,7 @@ import {
   Route
 } from '../types'
 import { NavTypeEnum } from '../enum'
+import { reactive, nextTick } from 'vue'
 
 /**
  * 页面跳转Promise方法
@@ -125,16 +126,22 @@ export function getHistory(history: Route[], index: number): Route {
   index = index < 0 ? 0 : index
   if (index === 0 && history.length === 0) {
     const pages = getCurrentPages()
-    const firstPage = pages[0]
+    const firstPage = reactive(pages[0])
     const path = '/' + (firstPage.route || '')
+    const url = (firstPage as any).$page?.fullPath || ''
     history[0] = {
-      url: path,
+      url: url,
       path: path,
       params: {},
-      query: getUrlQuery(path),
+      query: url ? getUrlQuery(url) : {},
       from: '',
       type: 'reLaunch',
       method: 'reLaunch'
+    }
+    if (!url) {
+      nextTick(() => {
+        history[0].query = getUrlQuery((firstPage as any).$page?.fullPath)
+      })
     }
     // 如果首页是tabbar页面，则保存在tabbar历史里
     const tabbar = uni.$mpRouter.router.pageJson.tabBar?.list

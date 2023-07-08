@@ -51,16 +51,22 @@ function getCurrentRouteInfo(type: NavTypeEnum, e: any) {
   const guardHooks = uni.$mpRouter.router.guardHooks
   const from = getHistory(history, history.length - 1)
   let to: Route
-  const { from: _, success, fail, ...otherOptions } = e
+  const { from: _, success, fail, query, params, ...otherOptions } = e
   if (type === NavTypeEnum.back) {
+    const delay = e.delay || 1
     const currentHistory = getHistory(
       history,
-      history.length > e.delay ? history.length - e.delay - 1 : 0
+      history.length > delay ? history.length - delay - 1 : 0
     )
-    to = Object.assign(currentHistory, otherOptions)
+    Object.assign(currentHistory.query, query)
+    Object.assign(currentHistory.params, params)
+    Object.assign(currentHistory, otherOptions)
+    to = currentHistory
   } else {
     to = {
       ...otherOptions,
+      query,
+      params,
       path: e.url
     }
   }
