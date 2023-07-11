@@ -95,9 +95,17 @@ export function queryStringify(
  */
 export function getUrlQuery(url: string = ''): AnyObject {
   const regexp = /[\?|\&]([^\=|\#|\?|\&]+)=([^\=|\#|\?|\&]*)/g
-  return Array.from(url.matchAll(regexp), (m) => ({
-    [m[1]]: m[2]
-  })).reduce(
+  return Array.from(url.matchAll(regexp), (m) => {
+    let value: any = decodeURIComponent(m[2])
+    if (/^\d*(\.?\d+)?$/.test(value)) {
+      value = Number(value)
+    } else if (value === 'true' || value === 'false') {
+      value = value === 'true' ? true : false
+    }
+    return {
+      [m[1]]: value
+    }
+  }).reduce(
     (r, p) => ({
       ...r,
       ...p
