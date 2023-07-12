@@ -123,7 +123,6 @@ export function mergeQueryAndUrlQuery(e: Route) {
   const urlQuery = getUrlQuery(e.url)
   e.query = { ...urlQuery, ...e.query }
   e.url = queryStringify(path, e.query)
-  console.log(e.url)
 }
 
 /**

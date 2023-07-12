@@ -169,7 +169,6 @@ export function addRouterInterceptor() {
 
         // 将url参数与query参数合并
         if (type !== NavTypeEnum.back) {
-          console.log(to.url)
           mergeQueryAndUrlQuery(to)
           e.url = to.url
         }

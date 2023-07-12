@@ -1,6 +1,6 @@
 {
   "name": "@ljhmp/uni-router-vue3",
-  "version": "0.0.15",
+  "version": "0.0.16",
   "description": "为uniapp写的路由库，实现类似vue-router的效果，仅支持vue3",
   "type": "module",
   "main": "./dist/mp-uni-router-vue3.umd.cjs",
@@ -24,6 +24,7 @@
   },
   "devDependencies": {
     "@dcloudio/types": "^3.3.3",
+    "@dcloudio/uni-cli-shared": "2.0.2-3080720230703001",
     "fast-glob": "^3.2.12",
     "mini-types": "^0.1.7",
     "miniprogram-api-typings": "^3.9.1",
