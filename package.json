@@ -1,6 +1,6 @@
 {
   "name": "@ljhmp/uni-router-vue3",
-  "version": "0.0.12",
+  "version": "0.0.15",
   "description": "为uniapp写的路由库，实现类似vue-router的效果，仅支持vue3",
   "type": "module",
   "main": "./dist/mp-uni-router-vue3.umd.cjs",
@@ -19,7 +19,8 @@
     "dev": "vite",
     "build": "tsc && vite build && npm run build:types",
     "preview": "vite preview",
-    "build:types": "node ./scripts/build-types.cjs"
+    "build:types": "node ./scripts/build-types.cjs",
+    "pub": "npm publish"
   },
   "devDependencies": {
     "@dcloudio/types": "^3.3.3",
