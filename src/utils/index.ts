@@ -100,7 +100,13 @@ export function getUrlQuery(url: string = ''): AnyObject {
     const searchArray = search.split('&')
     return searchArray
       .map((item) => {
-        const [key, value = ''] = item.split('=')
+        const [key, rawValue = ''] = item.split('=')
+        let value: any = decodeURIComponent(rawValue)
+        if (/^\d*(\.?\d+)?$/.test(value)) {
+          value = Number(value)
+        } else if (value === 'true' || value === 'false') {
+          value = value === 'true' ? true : false
+        }
         return { [key]: value }
       })
       .reduce(
