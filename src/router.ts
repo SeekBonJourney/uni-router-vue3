@@ -49,11 +49,26 @@ export function createRouter(options: RouterOptions) {
         router.guardHooks.afterHooks.push(userGuard)
       }
     },
+    getParams(key, isDel) {
+      const value = uni.$mpRouter.params[key]
+      if (isDel) {
+        delete uni.$mpRouter.params[key]
+      }
+      return value
+    },
+    setParams(key, value, type = 'merge') {
+      if (type === 'rewrite') {
+        uni.$mpRouter.params[key] = value
+      } else if (type === 'merge') {
+        uni.$mpRouter.params[key] = { ...uni.$mpRouter.params[key], ...value }
+      }
+    },
     install(app: App) {
       uni.$mpRouter = {
         router,
         history: reactive([]),
-        tabHistory: {}
+        tabHistory: {},
+        params: reactive({})
       }
 
       // 提供非setup组件使用方式

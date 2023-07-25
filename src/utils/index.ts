@@ -275,3 +275,22 @@ export function getFullPath(fromPath: string, toPath: string) {
 export function pathHasExist(path: string) {
   return uni.$mpRouter.router.allFullPath.includes(path.split('?')[0])
 }
+
+/**
+ * 深度合并对象
+ * @param target
+ * @param source
+ */
+export function deepObjectMerge(target: AnyObject, source: AnyObject) {
+  for (const key in source) {
+    if (source.hasOwnProperty(key)) {
+      const element = source[key]
+      if (typeof element === 'object') {
+        target[key] = deepObjectMerge(target[key] || {}, element)
+      } else {
+        target[key] = element
+      }
+    }
+  }
+  return target
+}

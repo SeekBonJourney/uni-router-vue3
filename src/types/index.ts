@@ -111,6 +111,8 @@ export type Route = RouteRaw & {
   [propName: string]: any
 }
 
+export type TSetParamsType = 'rewrite' | 'merge'
+
 // Router类型
 export interface Router {
   pageJson: PageJsonType
@@ -125,6 +127,8 @@ export interface Router {
   go(to: GoRouteLocation): void
   beforeEach(userGuard: BeforeEachGuard): void
   afterEach(userGuard: AfterEachGuard): void
+  getParams(key: string, isDel?: boolean): any
+  setParams(key: string, value: any, type?: TSetParamsType): void
   install(app: App): void
 }
 

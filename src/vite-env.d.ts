@@ -9,6 +9,9 @@ declare global {
       tabHistory: {
         [key: string]: Route
       }
+      params: {
+        [key: string]: any
+      }
     }
   }
 }
