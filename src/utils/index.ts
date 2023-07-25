@@ -72,7 +72,7 @@ export function queryStringify(
   } else {
     let arr: AnyObject = []
     Object.keys(query as AnyObject).forEach((key) => {
-      arr.push(`${key}=${encodeURIComponent((query as AnyObject)[key])}`)
+      arr.push(`${key}=${(query as AnyObject)[key]}`)
     })
     if (arr.length) {
       queryStr = arr.join('&')
@@ -94,24 +94,30 @@ export function queryStringify(
  * @returns 参数
  */
 export function getUrlQuery(url: string = ''): AnyObject {
-  const regexp = /[\?|\&]([^\=|\#|\?|\&]+)=([^\=|\#|\?|\&]*)/g
-  return Array.from(url.matchAll(regexp), (m) => {
-    let value: any = decodeURIComponent(m[2])
-    if (/^\d*(\.?\d+)?$/.test(value)) {
-      value = Number(value)
-    } else if (value === 'true' || value === 'false') {
-      value = value === 'true' ? true : false
-    }
-    return {
-      [m[1]]: value
-    }
-  }).reduce(
-    (r, p) => ({
-      ...r,
-      ...p
-    }),
-    {}
-  )
+  const idx = url.indexOf('?')
+  if (idx > -1) {
+    const search = url.slice(idx + 1)
+    const searchArray = search.split('&')
+    return searchArray
+      .map((item) => {
+        const [key, rawValue = ''] = item.split('=')
+        let value: any = decodeURIComponent(rawValue)
+        if (/^\d*(\.?\d+)?$/.test(value)) {
+          value = Number(value)
+        } else if (value === 'true' || value === 'false') {
+          value = value === 'true' ? true : false
+        }
+        return { [key]: value }
+      })
+      .reduce(
+        (r, p) => ({
+          ...r,
+          ...p
+        }),
+        {}
+      )
+  }
+  return {}
 }
 
 /**

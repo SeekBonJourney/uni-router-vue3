@@ -19,10 +19,12 @@
     "dev": "vite",
     "build": "tsc && vite build && npm run build:types",
     "preview": "vite preview",
-    "build:types": "node ./scripts/build-types.cjs"
+    "build:types": "node ./scripts/build-types.cjs",
+    "pub": "npm publish"
   },
   "devDependencies": {
     "@dcloudio/types": "^3.3.3",
+    "@dcloudio/uni-cli-shared": "2.0.2-3080720230703001",
     "fast-glob": "^3.2.12",
     "mini-types": "^0.1.7",
     "miniprogram-api-typings": "^3.9.1",
