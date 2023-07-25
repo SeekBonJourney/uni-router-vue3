@@ -128,7 +128,7 @@ export interface Router {
   beforeEach(userGuard: BeforeEachGuard): void
   afterEach(userGuard: AfterEachGuard): void
   getParams(key: string, isDel?: boolean): any
-  setParams(key: string, value: any, type?: TSetParamsType): void
+  setParams(key: string, value: AnyObject, type?: TSetParamsType): void
   install(app: App): void
 }
 

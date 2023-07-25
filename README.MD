@@ -217,6 +217,32 @@ export type Route = RouteRaw & {
 }
 ```
 
+### 设置|获取 页面参数：router.getParams、router.setParams、useParams
+
+- 适用于跨多页面传递数据，与页面的params没有关系
+
+```js
+import { useRouter, useParams } from "@ljhmp/uni-router-vue3";
+
+const router = useRouter()
+
+// 使用router调用
+router.setParams('about', { a: 1 })
+router.getParams('about')
+
+// 使用useParams调用
+const { params, setParams } = useParams('about')
+setParams({a: 1})
+console.log(params)
+
+// 参数及类型说明
+// isDel: 获取后删除
+getParams(key: string, isDel?: boolean): any
+useParams(key: string, isDel?: boolean)
+// rewrite: 覆盖、merge: 合并（默认）
+setParams(key: string, value: object, type?: 'rewrite' | 'merge'): void
+```
+
 
 ## 使用事例
 

@@ -50,7 +50,7 @@ export function createRouter(options: RouterOptions) {
       }
     },
     getParams(key, isDel) {
-      const value = uni.$mpRouter.params[key]
+      const value: AnyObject = uni.$mpRouter.params[key] || {}
       if (isDel) {
         delete uni.$mpRouter.params[key]
       }

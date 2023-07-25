@@ -32,7 +32,7 @@ export function useParams(key: string, isDel = false) {
   const router = useRouter()
   return {
     params: router.getParams(key, isDel),
-    setParams: (value: any, type?: TSetParamsType) =>
+    setParams: (value: AnyObject, type?: TSetParamsType) =>
       router.setParams(key, value, type)
   }
 }
