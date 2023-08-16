@@ -4,6 +4,9 @@ devDependencies:
   '@dcloudio/types':
     specifier: ^3.3.3
     version: 3.3.3
+  '@dcloudio/uni-cli-shared':
+    specifier: 2.0.2-3080720230703001
+    version: 2.0.2-3080720230703001
   fast-glob:
     specifier: ^3.2.12
     version: 3.2.12
@@ -57,6 +60,17 @@ packages:
 
   /@dcloudio/types@3.3.3:
     resolution: {integrity: sha512-xfp88QOJ2fgCzv49HhEGrX0L+3xDsCyyvcoApL7z0J1Lr7tqPUkxqAVBe9zBlKsDX/mO9mNj7NzKIisHfp+fNQ==}
+    dev: true
+
+  /@dcloudio/uni-cli-shared@2.0.2-3080720230703001:
+    resolution: {integrity: sha512-6TBGIVSVTkPggrhVvPNo8qXaTbSUquafPWAMpxPH4sDqPzV2NrVJWT9lnWWPOqBiuCA1BloQJslgEbe/4UFI5g==}
+    dependencies:
+      escape-string-regexp: 4.0.0
+      fast-glob: 3.2.12
+      glob-escape: 0.0.2
+      hash-sum: 1.0.2
+      postcss-urlrewrite: 0.2.2
+      strip-json-comments: 2.0.1
     dev: true
 
   /@esbuild/android-arm64@0.17.19:
@@ -425,6 +439,11 @@ packages:
       '@esbuild/win32-x64': 0.17.19
     dev: true
 
+  /escape-string-regexp@4.0.0:
+    resolution: {integrity: sha512-TtpcNJ3XAzx3Gq8sWRzJaVajRs0uVxA2YAkdb1jm2YkPz4G6egUFAyA3n5vtEIZefPk5Wa4UXbKuS5fKkJWdgA==}
+    engines: {node: '>=10'}
+    dev: true
+
   /estree-walker@2.0.2:
     resolution: {integrity: sha512-Rfkk/Mp/DL7JVje3u18FxFujQlTNR2q6QfMSMB7AvCBx91NGj/ba3kCfza0f6dVDbw7YlRf/nDrn7pQrCCyQ/w==}
     dev: true
@@ -461,11 +480,20 @@ packages:
     dev: true
     optional: true
 
+  /glob-escape@0.0.2:
+    resolution: {integrity: sha512-L/cXYz8x7qer1HAyUQ+mbjcUsJVdpRxpAf7CwqHoNBs9vTpABlGfNN4tzkDxt+u3Z7ZncVyKlCNPtzb0R/7WbA==}
+    engines: {node: '>= 0.10'}
+    dev: true
+
   /glob-parent@5.1.2:
     resolution: {integrity: sha512-AOIgSQCepiJYwP3ARnGx+5VnTu2HBYdzbGP45eLw1vr3zB3vZLeyed1sC9hnbcOc9/SrMyM5RPQrkGz4aS9Zow==}
     engines: {node: '>= 6'}
     dependencies:
       is-glob: 4.0.3
+    dev: true
+
+  /hash-sum@1.0.2:
+    resolution: {integrity: sha512-fUs4B4L+mlt8/XAtSOGMUO1TXmAelItBPtJG7CyHJfYTdDjwisntGO2JQz7oUsatOY9o68+57eziUVNw/mRHmA==}
     dev: true
 
   /is-extglob@2.1.1:
@@ -544,6 +572,20 @@ packages:
     engines: {node: '>=8.6'}
     dev: true
 
+  /postcss-helpers@0.3.3:
+    resolution: {integrity: sha512-VumiUcrpbxGlTBNQj6fUOkb/HNRUk/xYz8bNlhgVOdvk3yWEy4B+0nlDUZZM9mTVZ5bJoxUy7WT6z/4E7oMTgw==}
+    engines: {node: '>=0.12.9'}
+    dependencies:
+      urijs: 1.19.11
+    dev: true
+
+  /postcss-urlrewrite@0.2.2:
+    resolution: {integrity: sha512-DxPSgykgHjoV4Z+ygvq2C5HkiuiKQQD74xpoNQSQuyi8zab9nODVtNKfnCN6BEv9VZrjpOGLGAf8BDvgG6EtHg==}
+    engines: {node: '>=0.12.9'}
+    dependencies:
+      postcss-helpers: 0.3.3
+    dev: true
+
   /postcss@8.4.24:
     resolution: {integrity: sha512-M0RzbcI0sO/XJNucsGjvWU9ERWxb/ytp1w6dKtxTKgixdtQDq4rmx/g8W1hnaheq9jgwL/oyEdH5Bc4WwJKMqg==}
     engines: {node: ^10 || ^12 || >=14}
@@ -591,6 +633,11 @@ packages:
     deprecated: Please use @jridgewell/sourcemap-codec instead
     dev: true
 
+  /strip-json-comments@2.0.1:
+    resolution: {integrity: sha512-4gB8na07fecVVkOI6Rs4e7T6NOTki5EmL7TUduTs6bu3EdnSycntVJ4re8kgZA+wx9IueI2Y11bfbgwtzuE0KQ==}
+    engines: {node: '>=0.10.0'}
+    dev: true
+
   /to-fast-properties@2.0.0:
     resolution: {integrity: sha512-/OaKK0xYrs3DmxRYqL/yDc+FxFUVYhDlXMhRmv3z915w2HF1tnN1omB354j8VUGO/hbRzyD6Y3sA7v7GS/ceog==}
     engines: {node: '>=4'}
@@ -614,6 +661,10 @@ packages:
     resolution: {integrity: sha512-XH627E9vkeqhlZFQuL+UsyAXEnibT0kWR2FWONlr4sTjvxyJYnyefgrkyECLzM5NenmKzRAy2rR/OlYLA1HkZw==}
     engines: {node: '>=14.17'}
     hasBin: true
+    dev: true
+
+  /urijs@1.19.11:
+    resolution: {integrity: sha512-HXgFDgDommxn5/bIv0cnQZsPhHDA90NPHD6+c/v21U5+Sx5hoP8+dP9IZXBU1gIfvdRfhG8cel9QNPeionfcCQ==}
     dev: true
 
   /vite@4.3.9:
