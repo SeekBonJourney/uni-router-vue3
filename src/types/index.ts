@@ -115,6 +115,7 @@ export type TSetParamsType = 'rewrite' | 'merge'
 
 // Router类型
 export interface Router {
+  base: string
   pageJson: PageJsonType
   readonly nameAndPathEnum: AnyObject
   readonly allFullPath: string[]
@@ -146,6 +147,7 @@ export interface GuardHooksConfig {
 
 // 创建路由传递的参数
 export interface RouterOptions {
+  base?: string
   pageJson: PageJsonType
 }
 

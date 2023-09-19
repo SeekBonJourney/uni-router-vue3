@@ -14,6 +14,7 @@ import { addRouterInterceptor } from './utils/interceptor'
 export function createRouter(options: RouterOptions) {
   const { nameAndPathEnum, allFullPath } = transformPageJson(options.pageJson)
   const router: Router = {
+    base: options.base ?? '/pages',
     pageJson: options.pageJson,
     nameAndPathEnum,
     allFullPath,

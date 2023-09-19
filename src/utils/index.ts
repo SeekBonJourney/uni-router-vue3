@@ -180,6 +180,7 @@ export function formatOptions(
   options: RouteLocation,
   type: NavType
 ): RouteLocationRaw {
+  const base = uni.$mpRouter.router.base
   if (type === 'back') {
     if (typeof options === 'number') {
       if (options < 60) {
@@ -192,16 +193,16 @@ export function formatOptions(
   } else {
     if (typeof options === 'string') {
       if (options.includes('/')) {
-        options = { path: options }
+        options = { path: base + options }
       } else {
-        const path = uni.$mpRouter.router.nameAndPathEnum[options]
+        const path = base + uni.$mpRouter.router.nameAndPathEnum[options]
         options = { path }
       }
     } else if (typeof options === 'object') {
       const name = (options as RouteLocationNameRaw).name
       if (name) {
         ;(options as RouteLocationPathRaw).path =
-          uni.$mpRouter.router.nameAndPathEnum[name]
+          base + uni.$mpRouter.router.nameAndPathEnum[name]
       }
     }
     return options as RouteLocationRaw
@@ -221,7 +222,7 @@ export function transformPageJson(pageJson: PageJsonType): {
   const allFullPath: string[] = []
   if (pageJson.pages) {
     pageJson.pages.forEach((page) => {
-      const fullPath = `/${page.path}`
+      const fullPath = page.path.replace('pages/', '')
       allFullPath.push(fullPath)
       if (page.name) {
         nameAndPathEnum[page.name] = fullPath
